@@ -1,0 +1,71 @@
+{#
+/**
+ * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ *
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE.txt
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @link          http://cakephp.org CakePHP(tm) Project
+ * @since         2.0.0
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
+#}
+    /**
+     * On Get method
+     *
+     * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
+     */
+    public function onGet()
+    {
+        $this->model->{{ singularName }} = $this->init();
+        $this->setData();
+    }
+
+    /**
+     * On Post method
+     *
+     * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
+     */
+    public function onPost()
+    {
+        $this->model->{{ singularName }} = $this->{{ currentModelName }}->patchEntity($this->init(), $this->request->getData());
+        if ($this->{{ currentModelName }}->save($this->model->{{ singularName }})) {
+            $this->Flash->success(__('The {{ singularHumanName|lower }} has been saved.'));
+
+            return $this->redirect(['action' => 'index']);
+        }
+        $this->Flash->error(__('The {{ singularHumanName|lower }} could not be saved. Please, try again.'));
+        $this->setData();
+    }
+
+    /**
+     * Initializes internal state.
+     *
+     * @return void.
+     */
+    private function init(): void
+    {
+        return $this->{{ currentModelName }}->newEmptyEntity();
+    }
+
+    /**
+     * Pass shared data to tempates.
+     *
+     * @return void.
+     */
+    private function setData(): void
+    {
+{% set associations = Bake.aliasExtractor(modelObj, 'BelongsTo') %}
+{% set associations = associations|merge(Bake.aliasExtractor(modelObj, 'BelongsToMany')) %}
+
+{% for assoc in associations %}
+    {%- set otherName = Bake.getAssociatedTableAlias(modelObj, assoc) %}
+    {%- set otherPlural = otherName|variable %}
+        $this->model->{{ otherPlural }} = $this->{{ currentModelName }}->{{ otherName }}->find('list', ['limit' => 200]);
+        {{- "\n" }}
+{% endfor %}
+        $this->set(['model' => $this->model]);
+    }

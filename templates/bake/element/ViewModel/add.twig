@@ -1,0 +1,33 @@
+{#
+/**
+ * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ *
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE.txt
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * @link          http://cakephp.org CakePHP(tm) Project
+ * @since         2.0.0
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
+#}
+    /**
+     * @var \{{ entityClass }} ${{ singularName }}
+     */
+     public ${{ singularName }};
+{%- set belongsTo = Bake.aliasExtractor(modelObj, 'BelongsTo') %}
+{%- set belongsToMany = Bake.aliasExtractor(modelObj, 'belongsToMany') %}
+{%- for assoc in belongsTo|merge(belongsToMany) %}
+    {%- set otherModel = PageBake.getAssociatedTable(modelObj, assoc) %}
+    {%- set classInfo = PageBake.getOjectFqn(otherModel) %}
+    {%- set otherName = Bake.getAssociatedTableAlias(modelObj, assoc) %}
+    {%- set otherPlural = otherName|variable %}
+
+
+    /**
+     * @var \{{ classInfo ?? 'Cake\\Datasource\\EntityInterface' }} ${{ otherPlural }}
+     */
+     public ${{ otherPlural }};
+{%- endfor %}
