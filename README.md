@@ -1,5 +1,17 @@
 # CakePages plugin for CakePHP
 
+<p>
+    <a href="LICENSE" target="_blank">
+        <img alt="Software License" src="https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square">
+    </a>
+    <a href="https://packagist.org/packages/skie/cake-pages" target="_blank">
+        <img alt="Total Downloads" src="https://img.shields.io/packagist/dt/skie/cake-pages.svg?style=flat-square">
+    </a>
+    <a href="https://packagist.org/packages/skie/cake-pages" target="_blank">
+        <img alt="Latest Stable Version" src="https://img.shields.io/packagist/v/skie/cake-pages.svg?style=flat-square&label=stable">
+    </a>
+</p>
+
 ### Motivation and goals of the project
 
 * Show how easy it is to change CakePHP project files structure.
