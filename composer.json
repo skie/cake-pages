@@ -1,11 +1,11 @@
 {
-    "name": "your-name-here/cake-pages",
+    "name": "skie/cake-pages",
     "description": "CakePages plugin for CakePHP",
     "type": "cakephp-plugin",
     "license": "MIT",
     "require": {
         "php": ">=7.4",
-        "cakephp/cakephp": "~4.2.0"
+        "cakephp/cakephp": "^4.2"
     },
     "require-dev": {
         "phpunit/phpunit": "^8.5 || ^9.3"
