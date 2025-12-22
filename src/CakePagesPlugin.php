@@ -11,7 +11,7 @@ use Cake\Routing\RouteBuilder;
 /**
  * Plugin for CakePages
  */
-class Plugin extends BasePlugin
+class CakePagesPlugin extends BasePlugin
 {
     /**
      * Load all the plugin configuration and bootstrap logic.
@@ -40,9 +40,9 @@ class Plugin extends BasePlugin
         $routes->plugin(
             'CakePages',
             ['path' => '/cake-pages'],
-            function (RouteBuilder $builder) {
+            function (RouteBuilder $builder): void {
                 $builder->fallbacks();
-            }
+            },
         );
         parent::routes($routes);
     }

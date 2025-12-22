@@ -36,7 +36,7 @@ class BakePageTemplateCommand extends BaseTemplateCommand
      * @param array|null $vars passed for use in templates
      * @return string|false Content from template
      */
-    public function getContent(Arguments $args, ConsoleIo $io, string $action, ?array $vars = null)
+    public function getContent(Arguments $args, ConsoleIo $io, string $action, ?array $vars = null): string|false
     {
         if (!$vars) {
             $vars = $this->_loadController($io);
@@ -79,5 +79,4 @@ class BakePageTemplateCommand extends BaseTemplateCommand
     {
         return Inflector::singularize(Inflector::camelize($name));
     }
-
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace CakePages\Page;
 
 use Cake\Controller\Exception\MissingActionException;
-use Cake\Http\ServerRequest;
 use Closure;
 
 /**
@@ -15,6 +14,12 @@ use Closure;
  */
 trait PageTrait
 {
+    /**
+     * Get the action closure for the current request
+     *
+     * @return \Closure
+     * @throws \Cake\Controller\Exception\MissingActionException
+     */
     public function getAction(): Closure
     {
         $request = $this->request;
@@ -25,7 +30,7 @@ trait PageTrait
         if (!$this->isAction($actionName)) {
             throw new MissingActionException([
                 'controller' => $this->name . 'Controller',
-                'action' => $request->getParam('action'),
+                'action' => $action,
                 'prefix' => $request->getParam('prefix') ?: '',
                 'plugin' => $request->getParam('plugin'),
             ]);

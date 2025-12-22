@@ -3,21 +3,18 @@ declare(strict_types=1);
 
 namespace CakePages\Middleware;
 
-use App\Application;
 use CakePages\Page\PageFactory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use RuntimeException;
 
 class PagesMiddleware implements MiddlewareInterface
 {
-
     /**
      * @var Application
      */
-    private $app;
+    private Application $app;
 
     /**
      * Constructor
@@ -25,7 +22,7 @@ class PagesMiddleware implements MiddlewareInterface
      * @param Application $app
      * @throws \RuntimeException
      */
-    public function __construct($app)
+    public function __construct(Application $app)
     {
         $this->app = $app;
     }

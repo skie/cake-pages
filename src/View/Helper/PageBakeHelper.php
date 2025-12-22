@@ -11,7 +11,6 @@ use Cake\View\Helper;
  */
 class PageBakeHelper extends Helper
 {
-
     /**
      * Get associated table insance.
      *
@@ -32,7 +31,7 @@ class PageBakeHelper extends Helper
      * @param object $object An object.
      * @return ?string
      */
-    public function getOjectFqn($object): ?string
+    public function getOjectFqn(object $object): ?string
     {
         if (!is_object($object)) {
             return null;

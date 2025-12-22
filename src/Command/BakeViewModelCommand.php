@@ -35,7 +35,7 @@ class BakeViewModelCommand extends BakeCommand
      *
      * @var string
      */
-    public $pathFragment = 'ViewModel/';
+    public string $pathFragment = 'ViewModel/';
 
     /**
      * Execute the command.
@@ -143,7 +143,7 @@ class BakeViewModelCommand extends BakeCommand
             'pluralName',
             'prefix',
             'singularHumanName',
-            'singularName'
+            'singularName',
         );
         foreach ($actions as $action) {
             $data['actionClass'] = strtoupper(substr($action, 0, 1)) . substr($action, 1);
@@ -203,7 +203,7 @@ class BakeViewModelCommand extends BakeCommand
         $testArgs = new Arguments(
             ['controller', $className],
             $args->getOptions(),
-            ['type', 'name']
+            ['type', 'name'],
         );
         $test->execute($testArgs, $io);
     }
@@ -218,7 +218,7 @@ class BakeViewModelCommand extends BakeCommand
     {
         $parser = $this->_setCommonOptions($parser);
         $parser->setDescription(
-            'Bake a controller skeleton.'
+            'Bake a controller skeleton.',
         )->addArgument('name', [
             'help' => 'Name of the controller to bake (without the `Controller` suffix). ' .
                 'You can use Plugin.name to bake controllers into plugins.',

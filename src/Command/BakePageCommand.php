@@ -35,7 +35,7 @@ class BakePageCommand extends BakeCommand
      *
      * @var string
      */
-    public $pathFragment = 'Controller/';
+    public string $pathFragment = 'Controller/';
 
     /**
      * Execute the command.
@@ -152,7 +152,7 @@ class BakePageCommand extends BakeCommand
             'pluralName',
             'prefix',
             'singularHumanName',
-            'singularName'
+            'singularName',
         );
         $data['name'] = $controllerName;
         foreach ($actions as $action) {
@@ -167,6 +167,13 @@ class BakePageCommand extends BakeCommand
         }
     }
 
+    /**
+     * Bake base AppPage class
+     *
+     * @param \Cake\Console\Arguments $args The console arguments
+     * @param \Cake\Console\ConsoleIo $io The console io
+     * @return void
+     */
     public function bakeBase(Arguments $args, ConsoleIo $io): void
     {
         $prefix = $this->getPrefix($args);
@@ -196,7 +203,6 @@ class BakePageCommand extends BakeCommand
             'plugin',
             'prefix',
         );
-
 
         // $data += [
             // 'namespace' => null,
@@ -266,7 +272,7 @@ class BakePageCommand extends BakeCommand
         $testArgs = new Arguments(
             ['controller', $className],
             $args->getOptions(),
-            ['type', 'name']
+            ['type', 'name'],
         );
         $test->execute($testArgs, $io);
     }
@@ -275,7 +281,7 @@ class BakePageCommand extends BakeCommand
      * Get the list of components for the controller.
      *
      * @param \Cake\Console\Arguments $args The console arguments
-     * @return string[]
+     * @return array<string>
      */
     public function getComponents(Arguments $args): array
     {
@@ -292,7 +298,7 @@ class BakePageCommand extends BakeCommand
      * Get the list of helpers for the controller.
      *
      * @param \Cake\Console\Arguments $args The console arguments
-     * @return string[]
+     * @return array<string>
      */
     public function getHelpers(Arguments $args): array
     {
@@ -315,7 +321,7 @@ class BakePageCommand extends BakeCommand
     {
         $parser = $this->_setCommonOptions($parser);
         $parser->setDescription(
-            'Bake a controller skeleton.'
+            'Bake a controller skeleton.',
         )->addArgument('name', [
             'help' => 'Name of the controller to bake (without the `Controller` suffix). ' .
                 'You can use Plugin.name to bake controllers into plugins.',

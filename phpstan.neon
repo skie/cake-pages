@@ -1,0 +1,14 @@
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: 4
+    bootstrapFiles:
+        - tests/bootstrap.php
+    ignoreErrors:
+        -
+            identifier: missingType.generics
+        -
+            identifier: unset.possiblyHookedProperty
+
+services:
