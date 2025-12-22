@@ -8,9 +8,9 @@ $findRoot = function () {
     }
 
     $root = dirname(__DIR__, 2);
-    if (is_dir($root . '/vendor/cakephp/cakephp')) {
-        return $root;
-    }
+        if (is_dir($root . '/vendor/cakephp/cakephp')) {
+            return $root;
+        }
 
     $root = dirname(__DIR__, 3);
     if (is_dir($root . '/vendor/cakephp/cakephp')) {

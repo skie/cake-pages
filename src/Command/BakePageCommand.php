@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace CakePages\Command;
 
 use Bake\Command\BakeCommand;
+use Bake\Command\TestCommand;
 use Bake\Utility\TableScanner;
 use Bake\Utility\TemplateRenderer;
 use Cake\Console\Arguments;
@@ -268,13 +269,16 @@ class BakePageCommand extends BakeCommand
         if ($args->getOption('no-test')) {
             return;
         }
-        $test = new TestCommand();
-        $testArgs = new Arguments(
-            ['controller', $className],
-            $args->getOptions(),
-            ['type', 'name'],
-        );
-        $test->execute($testArgs, $io);
+        if (class_exists(TestCommand::class)) {
+            /** @phpstan-var \Bake\Command\TestCommand $test */
+            $test = new TestCommand();
+            $testArgs = new Arguments(
+                ['controller', $className],
+                $args->getOptions(),
+                ['type', 'name'],
+            );
+            $test->execute($testArgs, $io);
+        }
     }
 
     /**

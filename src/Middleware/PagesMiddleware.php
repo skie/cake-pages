@@ -12,17 +12,18 @@ use Psr\Http\Server\RequestHandlerInterface;
 class PagesMiddleware implements MiddlewareInterface
 {
     /**
-     * @var Application
+     * Application instance that supports controller factory
+     *
+     * @var \CakePages\Middleware\ApplicationWithControllerFactory
      */
-    private Application $app;
+    private ApplicationWithControllerFactory $app;
 
     /**
      * Constructor
      *
-     * @param Application $app
-     * @throws \RuntimeException
+     * @param \CakePages\Middleware\ApplicationWithControllerFactory $app Application instance
      */
-    public function __construct(Application $app)
+    public function __construct(ApplicationWithControllerFactory $app)
     {
         $this->app = $app;
     }

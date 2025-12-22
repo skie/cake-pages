@@ -10,7 +10,7 @@ use Closure;
  * Trait PageTrait
  *
  * @package CakePages\Page
- * @property ServerRequest $request
+ * @property \Cake\Http\ServerRequest $request
  */
 trait PageTrait
 {

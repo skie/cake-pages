@@ -97,7 +97,7 @@ class PageFactory implements ControllerFactoryInterface, RequestHandlerInterface
                 $paramType = $parameter->getType();
                 if (
                     $parameter->getName() === 'components' &&
-                    $paramType !== null &&
+                    $paramType instanceof ReflectionNamedType &&
                     $paramType->getName() == ComponentRegistry::class
                 ) {
                     $hasComponents = true;
@@ -105,9 +105,9 @@ class PageFactory implements ControllerFactoryInterface, RequestHandlerInterface
                 }
             }
             if ($hasComponents) {
-                $controller = $reflection->newInstance(request: $request, components: $components);
+                $controller = $reflection->newInstanceArgs([$request, null, null, $components]);
             } else {
-                $controller = $reflection->newInstance($request);
+                $controller = $reflection->newInstanceArgs([$request]);
             }
         }
 

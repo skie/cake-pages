@@ -7,8 +7,9 @@ use Cake\Core\ContainerInterface;
 use Cake\Http\BaseApplication;
 use Cake\Http\ControllerFactoryInterface;
 use Cake\Http\MiddlewareQueue;
+use CakePages\Middleware\ApplicationWithControllerFactory;
 
-class TestApplication extends BaseApplication
+class TestApplication extends BaseApplication implements ApplicationWithControllerFactory
 {
     protected ?ControllerFactoryInterface $controllerFactory = null;
 

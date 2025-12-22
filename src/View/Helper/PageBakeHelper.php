@@ -33,10 +33,6 @@ class PageBakeHelper extends Helper
      */
     public function getOjectFqn(object $object): ?string
     {
-        if (!is_object($object)) {
-            return null;
-        }
-
         return get_class($object);
     }
 }

@@ -23,6 +23,7 @@ use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Core\Configure;
 use Cake\Datasource\ConnectionManager;
+use Cake\ORM\Entity;
 use CakePages\Utility\TemplateRenderer;
 
 /**
@@ -127,7 +128,8 @@ class BakeViewModelCommand extends BakeCommand
         [, $entityClass] = namespaceSplit($entityClassName);
         $entityClass = sprintf('%s\Model\Entity\%s', $namespace, $entityClass);
         if (!class_exists($entityClass)) {
-            $entityClass = EntityInterface::class;
+            /** @var class-string<\Cake\ORM\Entity> $entityClass */
+            $entityClass = Entity::class;
         }
 
         $data = compact(

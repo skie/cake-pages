@@ -34,9 +34,9 @@ class BakePageTemplateCommand extends BaseTemplateCommand
      * @param \Cake\Console\ConsoleIo $io The console io
      * @param string $action name to generate content to
      * @param array|null $vars passed for use in templates
-     * @return string|false Content from template
+     * @return string Content from template
      */
-    public function getContent(Arguments $args, ConsoleIo $io, string $action, ?array $vars = null): string|false
+    public function getContent(Arguments $args, ConsoleIo $io, string $action, ?array $vars = null): string
     {
         if (!$vars) {
             $vars = $this->_loadController($io);
