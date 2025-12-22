@@ -164,7 +164,7 @@ class BakePageCommand extends BakeCommand
             $data['actionClass'] = $actionClass;
 
             $this->bakePage($controllerName, $data, $args, $io);
-            // $this->bakeTest($controllerName, $args, $io);
+            $this->bakeTest($controllerName, $args, $io);
         }
     }
 

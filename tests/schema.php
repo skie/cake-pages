@@ -71,4 +71,42 @@ return [
             ],
         ],
     ],
+    [
+        'table' => 'posts',
+        'columns' => [
+            'id' => [
+                'type' => 'integer',
+                'autoIncrement' => true,
+            ],
+            'title' => [
+                'type' => 'string',
+                'length' => 255,
+                'null' => false,
+            ],
+            'body' => [
+                'type' => 'text',
+                'null' => true,
+            ],
+            'user_id' => [
+                'type' => 'integer',
+                'null' => true,
+            ],
+            'created' => [
+                'type' => 'datetime',
+                'null' => true,
+            ],
+            'modified' => [
+                'type' => 'datetime',
+                'null' => true,
+            ],
+        ],
+        'constraints' => [
+            'primary' => [
+                'type' => 'primary',
+                'columns' => [
+                    'id',
+                ],
+            ],
+        ],
+    ],
 ];

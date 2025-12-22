@@ -153,7 +153,6 @@ class BakeViewModelCommand extends BakeCommand
             $data['action'] = $action;
 
             $this->bakeViewModels($controllerName, $data, $args, $io);
-            // $this->bakeTest($controllerName, $args, $io);
         }
     }
 
@@ -189,28 +188,6 @@ class BakeViewModelCommand extends BakeCommand
     }
 
     /**
-     * Assembles and writes a unit test file
-     *
-     * @param string $className Controller class name
-     * @param \Cake\Console\Arguments $args The console arguments
-     * @param \Cake\Console\ConsoleIo $io The console io
-     * @return void
-     */
-    public function bakeTest(string $className, Arguments $args, ConsoleIo $io): void
-    {
-        if ($args->getOption('no-test')) {
-            return;
-        }
-        $test = new TestCommand();
-        $testArgs = new Arguments(
-            ['controller', $className],
-            $args->getOptions(),
-            ['type', 'name'],
-        );
-        $test->execute($testArgs, $io);
-    }
-
-    /**
      * Gets the option parser instance and configures it.
      *
      * @param \Cake\Console\ConsoleOptionParser $parser The console option parser
@@ -220,23 +197,36 @@ class BakeViewModelCommand extends BakeCommand
     {
         $parser = $this->_setCommonOptions($parser);
         $parser->setDescription(
-            'Bake a controller skeleton.',
+            'Bake ViewModel classes.',
         )->addArgument('name', [
-            'help' => 'Name of the controller to bake (without the `Controller` suffix). ' .
-                'You can use Plugin.name to bake controllers into plugins.',
+            'help' => 'Name of the controller to bake ViewModels for (without the `Controller` suffix). ' .
+                'You can use Plugin.name to bake ViewModels into plugins.',
         ])->addOption('prefix', [
             'help' => 'The namespace/routing prefix to use.',
         ])->addOption('actions', [
             'help' => 'The comma separated list of actions to generate. ' .
                       'You can include custom methods provided by your template set here.',
-        ])->addOption('no-test', [
-            'boolean' => true,
-            'help' => 'Do not generate a test skeleton.',
         ])->addOption('no-actions', [
             'boolean' => true,
             'help' => 'Do not generate basic CRUD action methods.',
         ]);
 
         return $parser;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public static function defaultName(): string
+    {
+        return 'bake viewmodel';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function name(): string
+    {
+        return 'viewmodel';
     }
 }

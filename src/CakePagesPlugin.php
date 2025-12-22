@@ -3,10 +3,14 @@ declare(strict_types=1);
 
 namespace CakePages;
 
+use Cake\Console\CommandCollection;
 use Cake\Core\BasePlugin;
 use Cake\Core\PluginApplicationInterface;
 use Cake\Http\MiddlewareQueue;
 use Cake\Routing\RouteBuilder;
+use CakePages\Command\BakePageCommand;
+use CakePages\Command\BakePageTemplateCommand;
+use CakePages\Command\BakeViewModelCommand;
 
 /**
  * Plugin for CakePages
@@ -24,6 +28,22 @@ class CakePagesPlugin extends BasePlugin
      */
     public function bootstrap(PluginApplicationInterface $app): void
     {
+    }
+
+    /**
+     * Add commands for the plugin
+     *
+     * @param \Cake\Console\CommandCollection $commands The command collection to update
+     * @return \Cake\Console\CommandCollection
+     */
+    public function console(CommandCollection $commands): CommandCollection
+    {
+        $commands = parent::console($commands);
+        $commands->add('bake page', BakePageCommand::class);
+        $commands->add('bake viewmodel', BakeViewModelCommand::class);
+        $commands->add('bake page_template', BakePageTemplateCommand::class);
+
+        return $commands;
     }
 
     /**

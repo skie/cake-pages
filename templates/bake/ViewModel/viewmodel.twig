@@ -22,10 +22,13 @@ declare(strict_types=1);
 
 namespace {{ namespace }}\ViewModel\{{ controllerName }}{{ prefix }};
 
+use CakePages\ViewModel\BaseViewModel;
+use CakePages\ViewModel\ViewModelInterface;
+
 /**
  * {{ controllerName }} {{ name }} ViewModel
  */
-class {{ name }}
+class {{ name }} extends BaseViewModel implements ViewModelInterface
 {
 {{ element('CakePages.ViewModel/' ~ action) }}
 
