@@ -10,7 +10,7 @@ class RequiredParamPage extends AppController
 {
     use PageTrait;
 
-    public function onGet($one): void
+    public function onGet(mixed $one): void
     {
         $this->autoRender = false;
         $this->response = $this->response->withStringBody(json_encode(compact('one')));

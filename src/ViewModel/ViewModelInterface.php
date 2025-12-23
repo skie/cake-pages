@@ -3,13 +3,15 @@ declare(strict_types=1);
 
 namespace CakePages\ViewModel;
 
+use JsonSerializable;
+
 /**
  * ViewModel Interface
  *
  * Contract for all ViewModel classes in the CakePages plugin.
  * ViewModels are data containers that prepare data for views.
  */
-interface ViewModelInterface extends \JsonSerializable
+interface ViewModelInterface extends JsonSerializable
 {
     /**
      * Convert the ViewModel to an array
@@ -18,4 +20,3 @@ interface ViewModelInterface extends \JsonSerializable
      */
     public function toArray(): array;
 }
-

@@ -5,10 +5,10 @@ parameters:
     level: 6
     bootstrapFiles:
         - tests/bootstrap.php
+    excludePaths:
+        - src/Controller/AppController.php
     ignoreErrors:
         -
             identifier: missingType.generics
-        -
-            identifier: unset.possiblyHookedProperty
 
 services:

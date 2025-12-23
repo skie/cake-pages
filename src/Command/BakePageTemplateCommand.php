@@ -33,7 +33,7 @@ class BakePageTemplateCommand extends BaseTemplateCommand
      * @param \Cake\Console\Arguments $args The CLI arguments
      * @param \Cake\Console\ConsoleIo $io The console io
      * @param string $action name to generate content to
-     * @param array|null $vars passed for use in templates
+     * @param array<string, mixed>|null $vars passed for use in templates
      * @return string Content from template
      */
     public function getContent(Arguments $args, ConsoleIo $io, string $action, ?array $vars = null): string

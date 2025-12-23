@@ -14,20 +14,23 @@
  */
 #}
     /**
-     * @var \{{ entityClass }} ${{ singularName }}
+     * @var \{{ entityClassFqn }}|null ${{ singularName }}
      */
-     public ${{ singularName }};
+    public ?{{ entityTypeHint }} ${{ singularName }} = null;
 {%- set belongsTo = Bake.aliasExtractor(modelObj, 'BelongsTo') %}
 {%- set belongsToMany = Bake.aliasExtractor(modelObj, 'belongsToMany') %}
 {%- for assoc in belongsTo|merge(belongsToMany) %}
     {%- set otherModel = PageBake.getAssociatedTable(modelObj, assoc) %}
-    {%- set classInfo = PageBake.getOjectFqn(otherModel) %}
+    {%- set otherEntityClass = PageBake.getEntityClassFromTableObject(otherModel) %}
+    {%- set otherEntityExists = PageBake.entityClassExists(otherEntityClass) %}
+    {%- set otherEntityTypeHint = otherEntityExists ? PageBake.getEntityShortName(otherEntityClass) : 'Entity' %}
+    {%- set otherEntityClassFqn = otherEntityExists ? otherEntityClass : '\\Cake\\ORM\\Entity' %}
     {%- set otherName = Bake.getAssociatedTableAlias(modelObj, assoc) %}
     {%- set otherPlural = otherName|variable %}
 
 
     /**
-     * @var \{{ classInfo ?? 'Cake\\Datasource\\EntityInterface' }} ${{ otherPlural }}
+     * @var \{{ otherEntityClassFqn }}[]|\Cake\Collection\CollectionInterface<\{{ otherEntityClassFqn }}>|null ${{ otherPlural }}
      */
-     public ${{ otherPlural }};
+    public ?CollectionInterface ${{ otherPlural }} = null;
 {%- endfor %}

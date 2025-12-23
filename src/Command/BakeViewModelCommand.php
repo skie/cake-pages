@@ -24,7 +24,9 @@ use Cake\Console\ConsoleOptionParser;
 use Cake\Core\Configure;
 use Cake\Datasource\ConnectionManager;
 use Cake\ORM\Entity;
+use Cake\ORM\Table;
 use CakePages\Utility\TemplateRenderer;
+use function Cake\Core\namespaceSplit;
 
 /**
  * Task class for creating and updating page files.
@@ -126,18 +128,17 @@ class BakeViewModelCommand extends BakeCommand
         $entityClassName = $this->_entityName($modelObj->getAlias());
 
         [, $entityClass] = namespaceSplit($entityClassName);
-        $entityClass = sprintf('%s\Model\Entity\%s', $namespace, $entityClass);
-        if (!class_exists($entityClass)) {
-            /** @var class-string<\Cake\ORM\Entity> $entityClass */
-            $entityClass = Entity::class;
+        $entityClassFqn = sprintf('%s\Model\Entity\%s', $namespace, $entityClass);
+        $entityExists = class_exists($entityClassFqn);
+        if (!$entityExists) {
+            /** @var class-string<\Cake\ORM\Entity> $entityClassFqn */
+            $entityClassFqn = Entity::class;
         }
 
         $data = compact(
-            // 'actions',
             'currentModelName',
             'defaultModel',
             'entityClassName',
-            'entityClass',
             'modelObj',
             'namespace',
             'plugin',
@@ -147,10 +148,22 @@ class BakeViewModelCommand extends BakeCommand
             'singularHumanName',
             'singularName',
         );
+        $data['entityClassFqn'] = $entityClassFqn;
+        $data['entityClass'] = $entityClassFqn;
+        $data['entityExists'] = $entityExists;
+        $data['entityTypeHint'] = $entityExists ? $entityClassName : 'Entity';
         foreach ($actions as $action) {
             $data['actionClass'] = strtoupper(substr($action, 0, 1)) . substr($action, 1);
-            $data['name'] = $data['entityClassName'] . $data['actionClass'];
+            $data['name'] = $data['entityTypeHint'] . $data['actionClass'];
             $data['action'] = $action;
+
+            $data['classImports'] = $this->getViewModelImports(
+                $namespace,
+                $entityClassName,
+                $action,
+                $entityExists,
+                $modelObj,
+            );
 
             $this->bakeViewModels($controllerName, $data, $args, $io);
         }
@@ -160,7 +173,7 @@ class BakeViewModelCommand extends BakeCommand
      * Generate the page code
      *
      * @param string $controllerName The name of the controller.
-     * @param array $data The data to turn into code.
+     * @param array<string, mixed> $data The data to turn into code.
      * @param \Cake\Console\Arguments $args The console args
      * @param \Cake\Console\ConsoleIo $io The console io
      * @return void
@@ -175,6 +188,8 @@ class BakeViewModelCommand extends BakeCommand
             'actionClass' => null,
             'plugin' => null,
             'pluginPath' => null,
+            'classImports' => [],
+            'entityClassFqn' => null,
         ];
 
         $renderer = new TemplateRenderer($this->theme);
@@ -228,5 +243,59 @@ class BakeViewModelCommand extends BakeCommand
     public function name(): string
     {
         return 'viewmodel';
+    }
+
+    /**
+     * Get imports for a ViewModel class
+     *
+     * @param string $namespace The namespace
+     * @param string $entityClassName The entity class name
+     * @param string $action The action name
+     * @param bool $entityExists Whether the entity class exists
+     * @param \Cake\ORM\Table $modelObj The model object
+     * @return array<string, string>
+     */
+    protected function getViewModelImports(string $namespace, string $entityClassName, string $action, bool $entityExists, Table $modelObj): array
+    {
+        $isCollection = ($action === 'index');
+        $hasAssociations = in_array($action, ['add', 'edit']);
+
+        $imports = [
+            'ViewModel' => 'CakePages\ViewModel\ViewModel',
+            'ViewModelInterface' => 'CakePages\ViewModel\ViewModelInterface',
+        ];
+
+        if ($entityExists) {
+            $entityClassFqn = sprintf('%s\Model\Entity\%s', $namespace, $entityClassName);
+            $imports[$entityClassName] = $entityClassFqn;
+        } else {
+            $imports['Entity'] = Entity::class;
+        }
+
+        if ($isCollection || $hasAssociations) {
+            $imports['CollectionInterface'] = 'Cake\Collection\CollectionInterface';
+        }
+
+        return $imports;
+    }
+
+    /**
+     * Get entity class FQN from table class FQN
+     *
+     * @param string $tableClass Table class FQN
+     * @return string Entity class FQN
+     */
+    protected function getEntityClassFromTable(string $tableClass): string
+    {
+        if (strpos($tableClass, '\\Model\\Table\\') === false) {
+            return Entity::class;
+        }
+
+        $parts = explode('\\', $tableClass);
+        $tableName = array_pop($parts);
+        $entityName = substr($tableName, 0, -5);
+        $namespace = implode('\\', array_slice($parts, 0, -2));
+
+        return sprintf('%s\Model\Entity\%s', $namespace, $entityName);
     }
 }

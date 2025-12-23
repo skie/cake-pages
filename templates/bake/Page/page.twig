@@ -17,21 +17,10 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 #}
-<?php
-declare(strict_types=1);
-
-namespace {{ namespace }}\Controller{{ prefix }}\{{ name }};
-
-use {{ namespace }}\ViewModel\{{ name }}{{ prefix }}\{{ entityClassName }}{{ actionClass }};
-use CakePages\Page\PageTrait;
-{% if plugin or prefix %}
-use {{ baseNamespace }}\Controller\AppController;
-
-{% endif %}
-{% if not (plugin or prefix) %}
-use {{ namespace }}\Controller\AppController;
-
-{% endif %}
+{{ element('Bake.file_header', {
+    namespace: namespace ~ '\\Controller' ~ (prefix ? '\\' ~ prefix|trim('\\') : '') ~ '\\' ~ name,
+    classImports: classImports ?? [],
+}) }}
 /**
  * {{ name }} {{ actionClass }} Page
  *
@@ -53,9 +42,9 @@ class {{ actionClass }}Page extends AppController
     use PageTrait;
 
     /**
-     * @var \{{ namespace }}\ViewModel\{{ name }}{{ prefix }}\{{ entityClassName }}{{ actionClass }}
+     * @var \{{ namespace }}\ViewModel\{{ name }}{{ prefix }}\{{ entityTypeHint }}{{ actionClass }}|null $model
      */
-     public $model;
+    protected ?{{ entityTypeHint }}{{ actionClass }} $model = null;
 
     /**
      * Initialize controller
@@ -65,7 +54,7 @@ class {{ actionClass }}Page extends AppController
     public function initialize(): void
     {
         parent::initialize();
-        $this->model = new {{ entityClassName }}{{ actionClass }}();
+        $this->model = new {{ entityTypeHint }}{{ actionClass }}();
 {% if components %}
 {% for component in components %}
         $this->loadComponent('{{ component }}');

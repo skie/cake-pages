@@ -17,6 +17,7 @@
 /**
  * @var \{{ namespace }}\View\AppView $this
  * @var \{{ viewModelClass }} $model
+ * @var \{{ entityClass }} $model->{{ singularVar }}
  */
 ?>
 {% set associations = {'BelongsTo': [], 'HasOne': [], 'HasMany': [], 'BelongsToMany': []}|merge(associations) %}
@@ -35,7 +36,7 @@
 {% set done = [] %}
         </div>
     </aside>
-    <div class="column-responsive column-80">
+    <div class="column column-80">
         <div class="{{ pluralVar }} view content">
             <h3><?= h($model->{{ singularVar }}->{{ displayField }}) ?></h3>
             <table>
@@ -45,7 +46,7 @@
 {% set details = associationFields[field] %}
                 <tr>
                     <th><?= __('{{ details.property|humanize }}') ?></th>
-                    <td><?= $model->{{ singularVar }}->has('{{ details.property }}') ? $this->Html->link($model->{{ singularVar }}->{{ details.property }}->{{ details.displayField }}, ['controller' => '{{ details.controller }}', 'action' => 'view', $model->{{ singularVar }}->{{ details.property }}->{{ details.primaryKey[0] }}]) : '' ?></td>
+                    <td><?= $model->{{ singularVar }}->hasValue('{{ details.property }}') ? $this->Html->link($model->{{ singularVar }}->{{ details.property }}->{{ details.displayField }}, ['controller' => '{{ details.controller }}', 'action' => 'view', $model->{{ singularVar }}->{{ details.property }}->{{ details.primaryKey[0] }}]) : '' ?></td>
                 </tr>
 {% else %}
                 <tr>
@@ -59,7 +60,7 @@
 {% for alias, details in associations.HasOne %}
                 <tr>
                     <th><?= __('{{ alias|underscore|singularize|humanize }}') ?></th>
-                    <td><?= $model->{{ singularVar }}->has('{{ details.property }}') ? $this->Html->link($model->{{ singularVar }}->{{ details.property }}->{{ details.displayField }}, ['controller' => '{{ details.controller }}', 'action' => 'view', $model->{{ singularVar }}->{{ details.property }}->{{ details.primaryKey[0] }}]) : '' ?></td>
+                    <td><?= $model->{{ singularVar }}->hasValue('{{ details.property }}') ? $this->Html->link($model->{{ singularVar }}->{{ details.property }}->{{ details.displayField }}, ['controller' => '{{ details.controller }}', 'action' => 'view', $model->{{ singularVar }}->{{ details.property }}->{{ details.primaryKey[0] }}]) : '' ?></td>
                 </tr>
 {% endfor %}
 {% endif %}
@@ -67,7 +68,26 @@
 {% for field in groupedFields.number %}
                 <tr>
                     <th><?= __('{{ field|humanize }}') ?></th>
+{% set columnData = Bake.columnData(field, schema) %}
+{% if columnData.null %}
+                    <td><?= $model->{{ singularVar }}->{{ field }} === null ? '' : $this->Number->format($model->{{ singularVar }}->{{ field }}) ?></td>
+{% else %}
                     <td><?= $this->Number->format($model->{{ singularVar }}->{{ field }}) ?></td>
+{% endif %}
+                </tr>
+{% endfor %}
+{% endif %}
+{% if groupedFields.enum %}
+{% for field in groupedFields.enum %}
+                <tr>
+                    <th><?= __('{{ field|humanize }}') ?></th>
+{% set columnData = Bake.columnData(field, schema) %}
+{% set supportsLabel = Bake.enumSupportsLabel(field, schema) %}
+{% if columnData.null %}
+                    <td><?= $model->{{ singularVar }}->{{ field }} === null ? '' : h($model->{{ singularVar }}->{{ field }}->{% if supportsLabel %}label(){% else %}value{% endif %}) ?></td>
+{% else %}
+                    <td><?= h($model->{{ singularVar }}->{{ field }}->{% if supportsLabel %}label(){% else %}value{% endif %}) ?></td>
+{% endif %}
                 </tr>
 {% endfor %}
 {% endif %}

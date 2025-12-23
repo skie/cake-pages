@@ -11,7 +11,7 @@ class OptionalDepPage extends AppController
 {
     use PageTrait;
 
-    public function onGet($any = null, ?string $str = null, ?stdClass $dep = null): void
+    public function onGet(mixed $any = null, ?string $str = null, ?stdClass $dep = null): void
     {
         $this->autoRender = false;
         $this->response = $this->response->withStringBody(json_encode(compact('dep', 'any', 'str')));

@@ -7,12 +7,12 @@ use ReflectionClass;
 use ReflectionProperty;
 
 /**
- * Base ViewModel Class
+ * ViewModel Class
  *
  * Abstract base class for all ViewModels in the CakePages plugin.
  * Provides common functionality for converting ViewModels to arrays and JSON.
  */
-abstract class BaseViewModel implements ViewModelInterface
+abstract class ViewModel implements ViewModelInterface
 {
     /**
      * Convert the ViewModel to an array
@@ -45,4 +45,3 @@ abstract class BaseViewModel implements ViewModelInterface
         return $this->toArray();
     }
 }
-

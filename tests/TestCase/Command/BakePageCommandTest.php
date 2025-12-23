@@ -98,6 +98,18 @@ class BakePageCommandTest extends TestCase
         $this->assertFilesExist($this->generatedFiles);
         $this->assertFileContains('class IndexPage', $this->generatedFiles[0]);
         $this->assertFileContains('class ViewPage', $this->generatedFiles[1]);
+        $this->assertFileContains('class AddPage', $this->generatedFiles[2]);
+        $this->assertFileContains('class EditPage', $this->generatedFiles[3]);
+        $this->assertFileContains('class DeletePage', $this->generatedFiles[4]);
+
+        foreach ($this->generatedFiles as $file) {
+            $content = file_get_contents($file);
+            $this->assertStringContainsString('declare(strict_types=1);', $content, 'File should have strict types');
+            $this->assertStringContainsString('use CakePages\Page\PageTrait;', $content, 'File should have PageTrait import');
+            $this->assertStringContainsString('protected ?Post', $content, 'File should have protected nullable typed property');
+            $this->assertStringContainsString('$model = null;', $content, 'File should have nullable model property with null default');
+            $this->assertStringContainsString('@var', $content, 'File should have docblock');
+        }
     }
 
     /**
@@ -172,4 +184,3 @@ class BakePageCommandTest extends TestCase
         $this->assertStringContainsString($expected, $contents, $message);
     }
 }
-

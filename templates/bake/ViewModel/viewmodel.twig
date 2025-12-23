@@ -17,18 +17,14 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 #}
-<?php
-declare(strict_types=1);
-
-namespace {{ namespace }}\ViewModel\{{ controllerName }}{{ prefix }};
-
-use CakePages\ViewModel\BaseViewModel;
-use CakePages\ViewModel\ViewModelInterface;
-
+{{ element('Bake.file_header', {
+    namespace: namespace ~ '\\ViewModel\\' ~ controllerName ~ (prefix ? '\\' ~ prefix|trim('\\') : ''),
+    classImports: classImports ?? [],
+}) }}
 /**
  * {{ controllerName }} {{ name }} ViewModel
  */
-class {{ name }} extends BaseViewModel implements ViewModelInterface
+class {{ name }} extends ViewModel
 {
 {{ element('CakePages.ViewModel/' ~ action) }}
 

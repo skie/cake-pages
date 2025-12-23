@@ -14,6 +14,6 @@
  */
 #}
     /**
-     * @var \{{ entityClass }}[]|\Cake\Collection\CollectionInterface ${{ pluralName }}
+     * @var \{{ entityClassFqn }}[]|\Cake\Collection\CollectionInterface<\{{ entityClassFqn }}>|null ${{ pluralName }}
      */
-     public ${{ pluralName }};
+    public ?CollectionInterface ${{ pluralName }} = null;

@@ -17,6 +17,17 @@
 /**
  * @var \{{ namespace }}\View\AppView $this
  * @var \{{ viewModelClass }} $model
+ * @var \{{ entityClass }}|null $model->{{ singularVar }}
+{% if associations.BelongsTo is defined %}
+    {%~ for assocName, assocData in associations.BelongsTo %}
+ * @var \Cake\Collection\CollectionInterface|string[] $model->{{ assocData.variable }}
+    {%~ endfor %}
+{% endif %}
+{% if associations.BelongsToMany is defined %}
+    {%~ for assocName, assocData in associations.BelongsToMany %}
+ * @var \Cake\Collection\CollectionInterface|string[] $model->{{ assocData.variable }}
+    {%~ endfor %}
+{% endif %}
  */
 ?>
 {{ element('CakePages.form') }}

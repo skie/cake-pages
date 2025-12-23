@@ -25,6 +25,7 @@ use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Core\Configure;
 use Cake\Datasource\ConnectionManager;
+use Cake\ORM\Entity;
 
 /**
  * Task class for creating and updating page files.
@@ -138,6 +139,13 @@ class BakePageCommand extends BakeCommand
         }
         $entityClassName = $this->_entityName($modelObj->getAlias());
 
+        [, $entityClass] = namespaceSplit($entityClassName);
+        $entityClassFqn = sprintf('%s\Model\Entity\%s', $namespace, $entityClass);
+        $entityExists = class_exists($entityClassFqn);
+        if (!$entityExists) {
+            $entityClassFqn = sprintf('\%s', Entity::class);
+        }
+
         $data = compact(
             // 'actions',
             'components',
@@ -156,12 +164,26 @@ class BakePageCommand extends BakeCommand
             'singularName',
         );
         $data['name'] = $controllerName;
+        $data['entityClassFqn'] = $entityClassFqn;
+        $data['entityExists'] = $entityExists;
+        $data['entityTypeHint'] = $entityExists ? $entityClassName : 'Entity';
         foreach ($actions as $action) {
             // $actionData = $data;
             $actionClass = strtoupper(substr($action, 0, 1)) . substr($action, 1);
             // $actionData['namespace'] .= '\\' . $actionClassName;
             $data['action'] = $action;
             $data['actionClass'] = $actionClass;
+
+            $data['classImports'] = $this->getPageImports(
+                $namespace,
+                $controllerName,
+                $prefix,
+                $entityClassName,
+                $actionClass,
+                $this->plugin,
+                $baseNamespace,
+                $entityExists,
+            );
 
             $this->bakePage($controllerName, $data, $args, $io);
             $this->bakeTest($controllerName, $args, $io);
@@ -228,7 +250,7 @@ class BakePageCommand extends BakeCommand
      * Generate the page code
      *
      * @param string $controllerName The name of the controller.
-     * @param array $data The data to turn into code.
+     * @param array<string, mixed> $data The data to turn into code.
      * @param \Cake\Console\Arguments $args The console args
      * @param \Cake\Console\ConsoleIo $io The console io
      * @return void
@@ -244,6 +266,7 @@ class BakePageCommand extends BakeCommand
             'components' => null,
             'plugin' => null,
             'pluginPath' => null,
+            'classImports' => [],
         ];
 
         $renderer = new TemplateRenderer($this->theme);
@@ -350,5 +373,50 @@ class BakePageCommand extends BakeCommand
         ]);
 
         return $parser;
+    }
+
+    /**
+     * Get imports for a page class
+     *
+     * @param string $namespace The namespace
+     * @param string $controllerName The controller name
+     * @param string $prefix The prefix
+     * @param string $entityClassName The entity class name
+     * @param string $actionClass The action class name
+     * @param string|null $plugin The plugin name
+     * @param string $baseNamespace The base namespace
+     * @param bool $entityExists Whether the entity class exists
+     * @return array<string, string>
+     */
+    protected function getPageImports(
+        string $namespace,
+        string $controllerName,
+        string $prefix,
+        string $entityClassName,
+        string $actionClass,
+        ?string $plugin,
+        string $baseNamespace,
+        bool $entityExists,
+    ): array {
+        $viewModelEntityName = $entityExists ? $entityClassName : 'Entity';
+        $viewModelClass = sprintf(
+            '%s\ViewModel\%s%s\%s%s',
+            $namespace,
+            $controllerName,
+            $prefix,
+            $viewModelEntityName,
+            $actionClass,
+        );
+        $viewModelShort = $viewModelEntityName . $actionClass;
+
+        $appControllerClass = $plugin || $prefix
+            ? sprintf('%s\Controller\AppController', $baseNamespace)
+            : sprintf('%s\Controller\AppController', $namespace);
+
+        return [
+            'AppController' => $appControllerClass,
+            'PageTrait' => 'CakePages\Page\PageTrait',
+            $viewModelShort => $viewModelClass,
+        ];
     }
 }

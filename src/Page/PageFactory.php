@@ -165,8 +165,8 @@ class PageFactory implements ControllerFactoryInterface, RequestHandlerInterface
      * Get the arguments for the controller action invocation.
      *
      * @param \Closure $action Controller action.
-     * @param array $passedParams Params passed by the router.
-     * @return array
+     * @param array<int, mixed> $passedParams Params passed by the router.
+     * @return array<int, mixed>
      */
     protected function getActionArgs(Closure $action, array $passedParams): array
     {
@@ -254,7 +254,7 @@ class PageFactory implements ControllerFactoryInterface, RequestHandlerInterface
      *
      * @param string $argument Argument to coerce
      * @param \ReflectionNamedType $type Parameter type
-     * @return array|string|float|int|bool|null
+     * @return array<int, mixed>|string|float|int|bool|null
      */
     protected function coerceStringToType(string $argument, ReflectionNamedType $type): array|string|float|int|bool|null
     {

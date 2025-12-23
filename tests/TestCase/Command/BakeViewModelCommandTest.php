@@ -97,8 +97,18 @@ class BakeViewModelCommandTest extends TestCase
         $this->assertExitCode(CommandInterface::CODE_SUCCESS);
         $this->assertFilesExist($this->generatedFiles);
         $this->assertFileContains('class PostIndex', $this->generatedFiles[0]);
-        $this->assertFileContains('extends BaseViewModel', $this->generatedFiles[0]);
-        $this->assertFileContains('implements ViewModelInterface', $this->generatedFiles[0]);
+        $this->assertFileContains('extends ViewModel', $this->generatedFiles[0]);
+
+        $indexContent = file_get_contents($this->generatedFiles[0]);
+        $this->assertStringContainsString('declare(strict_types=1);', $indexContent, 'File should have strict types');
+        $this->assertStringContainsString('use Cake\Collection\CollectionInterface;', $indexContent, 'File should have CollectionInterface import');
+        $this->assertStringContainsString('use TestApp\Model\Entity\Post;', $indexContent, 'File should have Post entity import');
+        $this->assertStringContainsString('public ?CollectionInterface $posts = null;', $indexContent, 'File should have nullable typed property');
+        $this->assertStringContainsString('@var', $indexContent, 'File should have docblock');
+        $this->assertStringContainsString('CollectionInterface<', $indexContent, 'File should have generic in docblock');
+
+        $viewContent = file_get_contents($this->generatedFiles[1]);
+        $this->assertStringContainsString('public ?Post $post = null;', $viewContent, 'View should have nullable typed property');
     }
 
     /**
@@ -114,8 +124,7 @@ class BakeViewModelCommandTest extends TestCase
         $this->assertExitCode(CommandInterface::CODE_SUCCESS);
         $this->assertFileExists($this->generatedFile);
         $this->assertFileContains('class PostIndex', $this->generatedFile);
-        $this->assertFileContains('extends BaseViewModel', $this->generatedFile);
-        $this->assertFileContains('implements ViewModelInterface', $this->generatedFile);
+        $this->assertFileContains('extends ViewModel', $this->generatedFile);
     }
 
     /**
@@ -128,6 +137,93 @@ class BakeViewModelCommandTest extends TestCase
         $this->exec('bake viewmodel Posts --connection test --no-actions');
 
         $this->assertExitCode(CommandInterface::CODE_SUCCESS);
+    }
+
+    /**
+     * Test baking a viewmodel when entity class does not exist (Orders)
+     *
+     * @return void
+     */
+    public function testBakeViewModelWithNonExistentEntity(): void
+    {
+        $this->generatedFiles = [
+            APP . 'ViewModel/Orders/EntityIndex.php',
+            APP . 'ViewModel/Orders/EntityView.php',
+        ];
+        $this->exec('bake viewmodel Orders --connection test --actions index,view');
+
+        $this->assertExitCode(CommandInterface::CODE_SUCCESS);
+        $this->assertFilesExist($this->generatedFiles);
+
+        $indexContent = file_get_contents($this->generatedFiles[0]);
+        $this->assertStringContainsString('use Cake\ORM\Entity;', $indexContent, 'File should use Entity when entity class does not exist');
+        $this->assertStringContainsString('public ?CollectionInterface $orders = null;', $indexContent, 'File should have nullable CollectionInterface typed property');
+        $this->assertStringContainsString('@var \\Cake\\ORM\\Entity[]', $indexContent, 'File should have Entity[] in docblock');
+        $this->assertStringNotContainsString('use TestApp\Model\Entity\Order;', $indexContent, 'File should not import non-existent Order entity');
+
+        $viewContent = file_get_contents($this->generatedFiles[1]);
+        $this->assertStringContainsString('use Cake\ORM\Entity;', $viewContent, 'View should use Entity when entity class does not exist');
+        $this->assertStringContainsString('public ?Entity $order = null;', $viewContent, 'View should have nullable Entity typed property');
+        $this->assertStringContainsString('@var \\Cake\\ORM\\Entity', $viewContent, 'View should have Entity in docblock');
+    }
+
+    /**
+     * Test baking a viewmodel with associations (Posts with BelongsTo Users, HasMany Comments, BelongsToMany Tags)
+     *
+     * @return void
+     */
+    public function testBakeViewModelWithAssociations(): void
+    {
+        $this->generatedFiles = [
+            APP . 'ViewModel/Posts/PostAdd.php',
+            APP . 'ViewModel/Posts/PostEdit.php',
+        ];
+        $this->exec('bake viewmodel Posts --connection test --actions add,edit');
+
+        $this->assertExitCode(CommandInterface::CODE_SUCCESS);
+        $this->assertFilesExist($this->generatedFiles);
+
+        $addContent = file_get_contents($this->generatedFiles[0]);
+        $this->assertStringContainsString('use Cake\Collection\CollectionInterface;', $addContent, 'Add should import CollectionInterface for associations');
+        $this->assertStringContainsString('public ?CollectionInterface $users = null;', $addContent, 'Add should have nullable typed users collection');
+        $this->assertStringContainsString('public ?CollectionInterface $tags = null;', $addContent, 'Add should have nullable typed tags collection');
+        $this->assertStringContainsString('@var \\TestApp\\Model\\Entity\\User[]', $addContent, 'Add should have User[] in docblock');
+        $this->assertStringContainsString('@var \\TestApp\\Model\\Entity\\Tag[]', $addContent, 'Add should have Tag[] in docblock');
+        $this->assertStringNotContainsString('use TestApp\Model\Entity\User;', $addContent, 'Add should not import User entity (only in docblock)');
+        $this->assertStringNotContainsString('use TestApp\Model\Entity\Tag;', $addContent, 'Add should not import Tag entity (only in docblock)');
+
+        $editContent = file_get_contents($this->generatedFiles[1]);
+        $this->assertStringContainsString('use Cake\Collection\CollectionInterface;', $editContent, 'Edit should import CollectionInterface for associations');
+        $this->assertStringContainsString('public ?CollectionInterface $users = null;', $editContent, 'Edit should have nullable typed users collection');
+        $this->assertStringContainsString('public ?CollectionInterface $tags = null;', $editContent, 'Edit should have nullable typed tags collection');
+        $this->assertStringContainsString('@var \\TestApp\\Model\\Entity\\User[]', $editContent, 'Edit should have User[] in docblock');
+        $this->assertStringContainsString('@var \\TestApp\\Model\\Entity\\Tag[]', $editContent, 'Edit should have Tag[] in docblock');
+    }
+
+    /**
+     * Test baking a viewmodel with BelongsTo associations (Comments with BelongsTo Posts and Users)
+     *
+     * @return void
+     */
+    public function testBakeViewModelWithBelongsToAssociations(): void
+    {
+        $this->generatedFiles = [
+            APP . 'ViewModel/Comments/CommentAdd.php',
+            APP . 'ViewModel/Comments/CommentEdit.php',
+        ];
+        $this->exec('bake viewmodel Comments --connection test --actions add,edit');
+
+        $this->assertExitCode(CommandInterface::CODE_SUCCESS);
+        $this->assertFilesExist($this->generatedFiles);
+
+        $addContent = file_get_contents($this->generatedFiles[0]);
+        $this->assertStringContainsString('use Cake\Collection\CollectionInterface;', $addContent, 'Add should import CollectionInterface for associations');
+        $this->assertStringContainsString('public ?CollectionInterface $posts = null;', $addContent, 'Add should have nullable typed posts collection');
+        $this->assertStringContainsString('public ?CollectionInterface $users = null;', $addContent, 'Add should have nullable typed users collection');
+        $this->assertStringContainsString('@var \\TestApp\\Model\\Entity\\Post[]', $addContent, 'Add should have Post[] in docblock');
+        $this->assertStringContainsString('@var \\TestApp\\Model\\Entity\\User[]', $addContent, 'Add should have User[] in docblock');
+        $this->assertStringNotContainsString('use TestApp\Model\Entity\Post;', $addContent, 'Add should not import Post entity (only in docblock)');
+        $this->assertStringNotContainsString('use TestApp\Model\Entity\User;', $addContent, 'Add should not import User entity (only in docblock)');
     }
 
     /**
@@ -160,4 +256,3 @@ class BakeViewModelCommandTest extends TestCase
         $this->assertStringContainsString($expected, $contents, $message);
     }
 }
-
